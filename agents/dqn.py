@@ -1,16 +1,5 @@
 # agents/dqn.py
-"""
-DQN agent pentru environment-ul parking-v0 (Gymnasium / highway-env)
 
-Acest fisier:
-- implementeaza Deep Q-Network (DQN) pentru actiuni discrete
-- include Replay Buffer
-- include Target Network (stabilizare)
-- include selectie epsilon-greedy
-- include pas de antrenare (Huber loss / SmoothL1Loss)
-
-Nota: actiunile discrete sunt gestionate in run_dqn.py (ACTIONS).
-"""
 
 from __future__ import annotations
 
@@ -26,11 +15,11 @@ import torch.optim as optim
 
 @dataclass
 class DQNConfig:
-    gamma: float = 0.99
-    lr: float = 1e-3
-    batch_size: int = 64
+    gamma: float = 0.99 # recompensele viitoare sunt aproape la fel de importante ca cele prezente
+    lr: float = 1e-3 # learning rate-ul pt optimizator
+    batch_size: int = 64 # nr tranzactii luate din buffer la un update
 
-    buffer_size: int = 50_000
+    buffer_size: int = 50_000 # nr maxim de tranzactii in memorie
     min_buffer_size: int = 2_000
 
     epsilon_start: float = 1.0
@@ -40,8 +29,8 @@ class DQNConfig:
     target_update_steps: int = 2_000  # hard update la N pasi de env
     train_every_steps: int = 1        # update la fiecare pas (dupa ce buffer e suficient)
 
-    hidden_dim: int = 128
-    seed: int = 42
+    hidden_dim: int = 128 # dim layer-elor ascunse din rețea.
+    seed: int = 42 # ot reproductibilitate (sa am aceleasi numere)
     device: str = "cpu"
 
 
@@ -57,8 +46,8 @@ class ReplayBuffer:
         self.next_states = np.zeros((capacity, state_dim), dtype=np.float32)
         self.dones = np.zeros((capacity,), dtype=np.float32)
 
-        self.ptr = 0
-        self.size = 0
+        self.ptr = 0 # aici scriu urmatoarea tranzitie
+        self.size = 0 # nr tranzitii efectiv salvate 
 
     def push(self, state: np.ndarray, action: int, reward: float, next_state: np.ndarray, done: bool) -> None:
         idx = self.ptr
