@@ -1,17 +1,17 @@
-# plot_ppo_results
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-import csv
 
-RESULTS_DIR = "results_ppo"
+# Make path independent of where the script is launched from.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+RESULTS_DIR = os.path.normpath(os.path.join(_HERE, "..", "results_ppo"))
 
 # Definim ce experimente vrem sa logam si cum le denumim pe grafic
 # Cheile (ppo_exp0) trebuie sa corespunda cu numele fisierelor generate
 exp_mapping = {
-    "ppo_exp0": "Standard (lr=3e-4, steps=1024)",
-    "ppo_exp1": "Low LR (lr=1e-4, steps=1024)",
-    "ppo_exp2": "Large Buffer (lr=3e-4, steps=2048)",
+    "ppo_exp0": "exp0",
+    "ppo_exp1": "exp1",
+    "ppo_exp2": "exp2",
 }
 
 experiments = {label: [] for label in exp_mapping.values()}
@@ -35,6 +35,8 @@ if os.path.isdir(RESULTS_DIR):
                     print(f"[Incarcat] {filename} -> {label}")
                 except Exception as e:
                     print(f"[Eroare] Nu am putut incarca {filename}: {e}")
+else:
+    print(f"[Eroare] Nu am gasit folderul de rezultate: {RESULTS_DIR}")
 
 def moving_average(x, window=20):
     if len(x) < window:
@@ -67,20 +69,14 @@ for label, runs in experiments.items():
     # Plotare
     x_axis = range(len(smoothed_mean))
     line = plt.plot(x_axis, smoothed_mean, label=label)
-    
-    # Adaugam umbra (deviatia standard)
-    plt.fill_between(x_axis, 
-                     smoothed_mean - smoothed_std, 
-                     smoothed_mean + smoothed_std, 
-                     alpha=0.2, color=line[0].get_color())
 
 if found_data:
     plt.xlabel("Episod")
-    plt.ylabel("Reward Total (Negativ = Distanta)")
+    plt.ylabel("Reward Total")
     plt.title("PPO Parking - Evolutia Antrenarii")
     plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()
 else:
-    print("Nu s-au gasit date! Ruleaza intai ppo_parking.py")
+    print("Nu s-au gasit date! Ruleaza intai ppo.py")

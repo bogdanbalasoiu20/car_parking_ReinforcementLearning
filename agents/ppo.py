@@ -1,6 +1,7 @@
 import os
 import sys
 import csv
+from gymnasium.wrappers import TimeLimit
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import BaseCallback, CallbackList, StopTrainingOnMaxEpisodes
 from stable_baselines3.common.vec_env import DummyVecEnv, VecMonitor
@@ -23,7 +24,10 @@ def run_ppo_experiment(learning_rate, n_steps, gamma, seed, episodes=500):
     set_random_seed(seed)
 
     def _make_env():
-        return create_environment(render=False, seed=seed)
+        env = create_environment(render=False, seed=seed)
+        # Limit episode length (max steps per episode)
+        env = TimeLimit(env, max_episode_steps=1500)
+        return env
 
     env = DummyVecEnv([_make_env])
     env = VecMonitor(env)
