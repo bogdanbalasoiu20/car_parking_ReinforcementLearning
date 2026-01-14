@@ -7,7 +7,6 @@ from stable_baselines3.common.callbacks import BaseCallback, CallbackList, StopT
 from stable_baselines3.common.vec_env import DummyVecEnv, VecMonitor
 from stable_baselines3.common.utils import set_random_seed
 
-# Import environment creation
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
